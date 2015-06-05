@@ -8,8 +8,8 @@ var uglify = require('gulp-uglify');
 var plumber = require('gulp-plumber');
 
 var paths = {
-  scripts: ['./src/models/*.js', './src/*/*.js', './src/app.js'],
-  styles: './src/**/*.scss'
+  scripts: ['./src/common/**/*.js', './src/*/*.js', './src/app.js'],
+  styles: ['./src/**/*.scss']
 }
 
 gulp.task('default', ['styles', 'scripts', 'watch']);

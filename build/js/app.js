@@ -1,34 +1,98 @@
+var Header = {};
+
+Header.controller = function() {
+  this.uid = CurrentUser.uid();
+};
+
+Header.view = function(ctrl) {
+  return (
+    {tag: "nav", attrs: {class:"navbar navbar-inverse navbar-fixed-top", id:"Header"}, children: [
+      {tag: "div", attrs: {class:"container-fluid"}, children: [
+        {tag: "div", attrs: {class:"navbar-header"}, children: [
+          {tag: "button", attrs: {type:"button", class:"navbar-toggle collapsed", "data-toggle":"collapse", "data-target":"#navbar", "aria-expanded":"false", "aria-controls":"navbar"}, children: [
+            {tag: "span", attrs: {class:"sr-only"}, children: ["Toggle navigation"]}, 
+            {tag: "span", attrs: {class:"icon-bar"}}, 
+            {tag: "span", attrs: {class:"icon-bar"}}, 
+            {tag: "span", attrs: {class:"icon-bar"}}
+          ]}, 
+          {tag: "a", attrs: {class:"navbar-brand", href:"#"}, children: ["Carnatic"]}
+        ]}, 
+        {tag: "div", attrs: {id:"navbar", class:"navbar-collapse collapse"}, children: [
+          {tag: "ul", attrs: {class:"nav navbar-nav navbar-right"}, children: [
+            {tag: "li", attrs: {}, children: [{tag: "a", attrs: {href:"#"}, children: ["Dashboard"]}]}, 
+            {tag: "li", attrs: {}, children: [{tag: "a", attrs: {href:"#"}, children: ["Settings"]}]}, 
+            {tag: "li", attrs: {}, children: [{tag: "a", attrs: {href:"#"}, children: ["Profile"]}]}, 
+            {tag: "li", attrs: {}, children: [{tag: "a", attrs: {href:"#"}, children: ["Help"]}]}, 
+            {tag: "li", attrs: {class:"divider"}}, 
+            {tag: "li", attrs: {}, children: [{tag: "a", attrs: {href:"#"}, children: [ctrl.uid]}]}
+          ]}
+        ]}
+      ]}
+    ]}
+  );
+};
+
+var AppLayout = function(view) {
+  return function(ctrl) {
+    return (
+      {tag: "div", attrs: {id:"AppLayout"}, children: [
+        Header, 
+        {tag: "div", attrs: {class:"container-fluid"}, children: [
+          view(ctrl)
+        ]}
+      ]}
+    );
+  };
+};
 var CurrentUser = (function(){
   var localUserData = JSON.parse(localStorage.getItem('carnatic-currentUser')) || {};
 
   return {
-    authToken: m.prop(localUserData.auth_token || ''),
-    id: m.prop(localUserData.id || ''),
+    uid: m.prop(localUserData.uid || ''),
     email: m.prop(localUserData.email || '')
-  }
+  };
 }());
 
 CurrentUser.reset = function(userData) {
-  CurrentUser.authToken(userData.auth_token);
-  CurrentUser.id(userData.id);
+  CurrentUser.uid(userData.uid);
   CurrentUser.email(userData.email);
   localStorage.setItem('carnatic-currentUser', JSON.stringify(userData));
-}
+};
 
 var AuthService = {
   login: function(email, password) {
-    return m.request({
-      method: 'POST',
-      url: 'http://localhost:3000/users/login',
-      data: {
-        email: email,
-        password: password
+    var ref = new Firebase("https://carnatic.firebaseio.com/");
+    var deferred = m.deferred();
+    m.startComputation();
+
+    ref.authWithPassword({
+      email: email,
+      password: password
+    }, function(error, authData) {
+      if(error) {
+        console.log("Firebase login failed, error: ", error);
+        deferred.reject(error);
+        m.endComputation();
+      } else {
+        console.log("Firebase login successful, authData: ", authData);
+        var userData = {
+          uid: authData.uid,
+          email: authData.password.email
+        }
+        CurrentUser.reset(userData);
+        deferred.resolve(userData);
+        m.endComputation();
       }
-    }).then(function(response) {
-      CurrentUser.reset(response);
     });
+
+    return deferred.promise;
   }
 }
+var Korvai = function(data) {
+  this.content = m.prop(data.content || '');
+  this.thalam = m.prop(data.thalam || 32);
+  this.matrasAfter = m.prop(data.matrasAfter || 0);
+};
 var Login = {
   skipAuth: true
 };
@@ -106,6 +170,57 @@ Login.view = function(ctrl) {
     ]}
   );
 };
+var ProfileKorvais = {};
+
+ProfileKorvais.controller = function() {
+  var vm = this;
+  var korvaisRef = new Firebase('https://carnatic.firebaseio.com/korvais/' + CurrentUser.uid());
+
+  vm.korvais = m.prop([]);
+  var initialKorvaisLoaded = false;
+
+  korvaisRef.on('child_added', function(snapshot) {
+    if(initialKorvaisLoaded) {
+      vm.korvais().push(new Korvai(snapshot.val()));
+      m.redraw();
+    }
+  });
+
+  korvaisRef.once('value', function(snapshot) {
+    initialKorvaisLoaded = true;
+    data = snapshot.val();
+
+    for(var k in snapshot.val()) {
+      vm.korvais().push(new Korvai(data[k]));
+    }
+    
+    m.redraw();
+  });
+};
+
+ProfileKorvais.view = AppLayout(function(ctrl) {
+  var korvais = ctrl.korvais().map(function(korvai, index) {
+    var title = "Thalam: " + korvai.thalam() + ", Matras after: " + korvai.matrasAfter();
+
+    return (
+      {tag: "div", attrs: {class:"panel panel-primary"}, children: [
+        {tag: "div", attrs: {class:"panel-heading"}, children: [
+          {tag: "h3", attrs: {class:"panel-title"}, children: [title]}
+        ]}, 
+        {tag: "div", attrs: {class:"panel-body"}, children: [
+          korvai.content()
+        ]}
+      ]}
+    );
+  });
+
+  return (
+    {tag: "div", attrs: {id:"ProfileKorvais"}, children: [
+      {tag: "h1", attrs: {}, children: ["Korvais View"]}, {tag: "br", attrs: {}}, 
+      korvais
+    ]}
+  );
+});
 function authRoutes(root, defaultRoute, router) {
   for(var route in router) {
     var module = router[route];
@@ -113,7 +228,7 @@ function authRoutes(root, defaultRoute, router) {
     router[route] = {
       view: module.view,
       controller: module.skipAuth ? module.controller : function authController() {
-        if(CurrentUser.auth_token()) success();
+        if(CurrentUser.uid()) success();
         else failure();
 
         function success() {
@@ -132,5 +247,6 @@ function authRoutes(root, defaultRoute, router) {
 }
 
 authRoutes(document.getElementById('app'), '/login', {
-  '/login': Login
+  '/login': Login,
+  '/korvais': ProfileKorvais
 });

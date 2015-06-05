@@ -5,7 +5,7 @@ function authRoutes(root, defaultRoute, router) {
     router[route] = {
       view: module.view,
       controller: module.skipAuth ? module.controller : function authController() {
-        if(CurrentUser.auth_token()) success();
+        if(CurrentUser.uid()) success();
         else failure();
 
         function success() {
@@ -24,5 +24,6 @@ function authRoutes(root, defaultRoute, router) {
 }
 
 authRoutes(document.getElementById('app'), '/login', {
-  '/login': Login
+  '/login': Login,
+  '/korvais': ProfileKorvais
 });
