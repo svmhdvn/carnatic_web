@@ -8,7 +8,7 @@ var uglify = require('gulp-uglify');
 var plumber = require('gulp-plumber');
 
 var paths = {
-  scripts: ['./src/*/*.js', './src/app.js'],
+  scripts: ['./src/models/*.js', './src/*/*.js', './src/app.js'],
   styles: './src/**/*.scss'
 }
 

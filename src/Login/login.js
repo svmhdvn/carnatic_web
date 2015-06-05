@@ -2,11 +2,43 @@ var Login = {
   skipAuth: true
 };
 
-Login.view = function() {
+Login.controller = function() {
+  var vm = this;
+
+  vm.email = m.prop('');
+  vm.password = m.prop('');
+  vm.alerts = m.prop([]);
+
+  vm.login = function(e) {
+    e.preventDefault();
+
+    if(vm.email() && vm.password()) {
+      AuthService.login(vm.email(), vm.password()).then(function() {
+        console.log('Current user model: ', CurrentUser);
+        vm.alerts().push("Login success!");
+      }, function() {
+        vm.alerts().push("Login failure!");
+      });
+    } else {
+      vm.alerts().push("Fields cannot be empty");
+    }
+  }
+};
+
+Login.view = function(ctrl) {
+  var alerts = ctrl.alerts().map(function(msg, index) {
+    return (
+      <div class="alert alert-warning alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        {msg}
+      </div>
+    );
+  });
+
   return (
     <div id="Login">
       <div class="container">
-        <form class="form-signin">
+        <form class="form-signin" onsubmit={ctrl.login}>
           <h2 class="form-signin-heading">Please sign in</h2>
 
           <label for="inputEmail" class="sr-only">Email address</label>
@@ -14,7 +46,9 @@ Login.view = function() {
             type="email" 
             id="inputEmail" 
             class="form-control" 
-            placeholder="Email address" 
+            placeholder="Email address"
+            onchange={m.withAttr('value', ctrl.email)}
+            value={ctrl.email()}
             required autofocus />
 
           <label for="inputPassword" class="sr-only">Password</label>
@@ -22,7 +56,9 @@ Login.view = function() {
             type="password" 
             id="inputPassword" 
             class="form-control" 
-            placeholder="Password" 
+            placeholder="Password"
+            onchange={m.withAttr('value', ctrl.password)}
+            value={ctrl.password()}
             required />
 
           <div class="checkbox">
@@ -33,6 +69,8 @@ Login.view = function() {
 
           <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
         </form>
+
+        {alerts}
       </div>
     </div>
   );
