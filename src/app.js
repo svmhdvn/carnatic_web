@@ -1,29 +1,46 @@
-function authRoutes(root, defaultRoute, router) {
-  for(var route in router) {
-    var module = router[route];
+var LoginPage = require('./Login/login.js');
+var ProfilePage = require('./Profile/profile.js');
+var ProfileKorvaisPage = require('./Profile/korvais.js');
+var CurrentUser = require('./common/models/current_user.js');
 
-    router[route] = {
-      view: module.view,
-      controller: module.skipAuth ? module.controller : function authController() {
-        if(CurrentUser.uid()) success();
-        else failure();
+var Authenticated = function(module) {
+  return {
+    controller: function() { return new Authenticated.controller(module); },
+    view: Authenticated.view
+  };
+};
 
-        function success() {
-          m.module(root, module);
-        }
+Authenticated.controller = function(module) {
+  if(!CurrentUser.uid()) m.route('/login');
+  this.content = module.view.bind(this, new module.controller);
+};
 
-        function failure() {
-          m.module(root, router['/login']);
-        }
-      }
-    };
-  }
+Authenticated.view = function(ctrl) {
+  return m("#Authenticated", ctrl.content());
+};
 
-  m.route.mode = 'hash';
-  m.route(root, defaultRoute, router);
-}
+// helpers
 
-authRoutes(document.getElementById('app'), '/login', {
-  '/login': Login,
-  '/korvais': ProfileKorvais
+String.prototype.repeat = function(num) {
+  return new Array(num + 1).join(this);
+};
+
+String.prototype.replaceAll = function(find, replace) {
+  return this.replace(new RegExp(find, 'g'), replace);
+};
+
+Array.prototype.removeDuplicates = function() {
+  return this.reduce(function(accum, current) {
+    if(accum.indexOf(current) < 0) accum.push(current);
+    return accum;
+  }, []);
+};
+
+// routes
+
+m.route.mode = 'hash';
+m.route(document.getElementById('app'), '/login', {
+  '/login': LoginPage,
+  '/korvais': Authenticated(ProfileKorvaisPage),
+  '/me': Authenticated(ProfilePage)
 });

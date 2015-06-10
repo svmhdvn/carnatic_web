@@ -3,3 +3,5 @@ var Korvai = function(data) {
   this.thalam = m.prop(data.thalam || 32);
   this.matrasAfter = m.prop(data.matrasAfter || 0);
 };
+
+module.exports = Korvai;

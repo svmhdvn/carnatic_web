@@ -1,6 +1,10 @@
-var ProfileKorvais = {};
+var AppLayout = require('../common/layouts/app_layout.js');
+var Korvai = require('../common/models/korvai.js');
+var CurrentUser = require('../common/models/current_user.js');
 
-ProfileKorvais.controller = function() {
+var ProfileKorvaisPage = {};
+
+ProfileKorvaisPage.controller = function() {
   var vm = this;
   var korvaisRef = new Firebase('https://carnatic.firebaseio.com/korvais/' + CurrentUser.uid());
 
@@ -26,7 +30,7 @@ ProfileKorvais.controller = function() {
   });
 };
 
-ProfileKorvais.view = AppLayout(function(ctrl) {
+ProfileKorvaisPage.view = AppLayout(function(ctrl) {
   var korvais = ctrl.korvais().map(function(korvai, index) {
     var title = "Thalam: " + korvai.thalam() + ", Matras after: " + korvai.matrasAfter();
 
@@ -49,3 +53,5 @@ ProfileKorvais.view = AppLayout(function(ctrl) {
     </div>
   );
 });
+
+module.exports = ProfileKorvaisPage;

@@ -1,8 +1,9 @@
-var Login = {
-  skipAuth: true
-};
+var CurrentUser = require('../common/models/current_user.js');
+var AuthService = require('../common/services/auth_service.js');
 
-Login.controller = function() {
+var LoginPage = {};
+
+LoginPage.controller = function() {
   var vm = this;
 
   vm.email = m.prop('');
@@ -25,7 +26,7 @@ Login.controller = function() {
   }
 };
 
-Login.view = function(ctrl) {
+LoginPage.view = function(ctrl) {
   var alerts = ctrl.alerts().map(function(msg, index) {
     return (
       <div class="alert alert-warning alert-dismissible" role="alert">
@@ -75,3 +76,5 @@ Login.view = function(ctrl) {
     </div>
   );
 };
+
+module.exports = LoginPage;

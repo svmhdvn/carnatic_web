@@ -1,3 +1,5 @@
+var CurrentUser = require('../models/current_user.js');
+
 var Header = {};
 
 Header.controller = function() {
@@ -15,8 +17,9 @@ Header.view = function(ctrl) {
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">Carnatic</a>
+          <a class="navbar-brand" href="#" id="logo">Carnatic</a>
         </div>
+
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
             <li><a href="#">Dashboard</a></li>
@@ -24,7 +27,7 @@ Header.view = function(ctrl) {
             <li><a href="#">Profile</a></li>
             <li><a href="#">Help</a></li>
             <li class="divider"></li>
-            <li><a href="#">{ctrl.uid}</a></li>
+            <li><a href="#/me">{ctrl.uid}</a></li>
           </ul>
         </div>
       </div>
@@ -44,3 +47,5 @@ var AppLayout = function(view) {
     );
   };
 };
+
+module.exports = AppLayout;
