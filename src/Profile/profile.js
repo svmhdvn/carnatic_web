@@ -4,8 +4,7 @@ var CurrentUser = require('../common/models/current_user.js');
 var ProfilePage = {};
 
 ProfilePage.controller = function() {
-  this.userId = CurrentUser.id();
-  this.gravatarUrl = 'http://www.gravatar.com/avatar/' + CryptoJS.MD5(CurrentUser.email()) + '?d=mm&s=256';
+  this.profile = CurrentUser.profile();
 };
 
 ProfilePage.view = AppLayout(function(ctrl) {
@@ -17,7 +16,13 @@ ProfilePage.view = AppLayout(function(ctrl) {
             <div class="panel-body">
               <div class="row">
                 <div class="col-xs-12 col-sm-4 text-center">
-                  <img src={ctrl.gravatarUrl} alt="Profile picture" class="center-block img-circle img-thumbnail img-responsive" />
+                  <img 
+                    src={ctrl.profile().picture_url()} 
+                    alt="Profile picture" 
+                    class="center-block img-circle img-thumbnail img-responsive" 
+                    height="200"
+                    width="200" />
+
                   <ul class="list-inline ratings text-center" title="Ratings">
                     <li><a href="#"><span class="fa fa-star fa-lg"></span></a></li>
                     <li><a href="#"><span class="fa fa-star fa-lg"></span></a></li>
@@ -28,7 +33,7 @@ ProfilePage.view = AppLayout(function(ctrl) {
                 </div>
 
                 <div class="col-xs-12 col-sm-8">
-                  <h2>{ctrl.userId}</h2>
+                  <h2>{ctrl.profile().name()}</h2>
                   <p><strong>About: </strong> Web Designer / UI Expert. </p>
                   <p><strong>Hobbies: </strong> Read, out with friends, listen to music, draw and learn new things. </p>
                   <p><strong>Skills: </strong>

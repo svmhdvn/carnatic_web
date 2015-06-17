@@ -3,7 +3,7 @@ var CurrentUser = require('../models/current_user.js');
 var Header = {};
 
 Header.controller = function() {
-  this.userId = CurrentUser.id();
+  this.profile = CurrentUser.profile();
 };
 
 Header.view = function(ctrl) {
@@ -27,7 +27,10 @@ Header.view = function(ctrl) {
             <li><a href="#">Profile</a></li>
             <li><a href="#">Help</a></li>
             <li class="divider"></li>
-            <li><a href="#/me">{ctrl.userId}</a></li>
+            <li><a href="#/me">
+              <img src={ctrl.profile().picture_url()} width="20" height="20" />&nbsp;&nbsp;
+              {ctrl.profile().name()}
+            </a></li>
           </ul>
         </div>
       </div>
