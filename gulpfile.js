@@ -33,15 +33,18 @@ gulp.task('browserify', function() {
 
         console.log('Updated!', (Date.now() - updateStart) + 'ms');
     })
-    .bundle() // Create the initial bundle when starting the task
+    .bundle()
+    .pipe(plumber()) // Create the initial bundle when starting the task
     .pipe(source('app.js'))
     .pipe(gulp.dest('./build/js'));
 });
 
 // I added this so that you see how to run two watch tasks
 gulp.task('styles', function() {
-  gulp.watch('./src/**/*.scss', function() {
-    return gulp.src('./src/**/*.scss')
+  gulp.watch(['./src/**/*.scss'], function() {
+    console.log("updating styles!");
+    
+    return gulp.src(['./src/**/*.scss'])
       .pipe(plumber())
       .pipe(sass())
       .pipe(rename({extname: '.css'}))

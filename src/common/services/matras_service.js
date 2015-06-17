@@ -38,7 +38,7 @@ var MatrasService = {
   // e.g. (thathinkinathom /3) produces "thathinkinathom thathinkinathom thathinkinathom "
   repeatString: function(r) {
     var lastSlash = r.lastIndexOf("/");
-    if(lastSlash is -1) return false;
+    if(lastSlash == -1) return false;
 
     var rString = r.substring(0, lastSlash);
     var repeaters = this.findModifiers(rString, "(", ")");

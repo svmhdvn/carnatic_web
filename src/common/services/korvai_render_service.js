@@ -1,11 +1,18 @@
 var MatrasService = require('./matras_service.js');
+var msx = require('msx');
 
 var KorvaiRenderService = {
-  renderHTML: function(korvai) {
-    return this.korvaiToHTML(korvai);
+  toMsx: function(korvai) {
+    return eval('(' + msx.transform(this.renderHTML(korvai)) + ')');
   },
 
-  convertRepeater: function(r, repeaters) {
+  renderHTML: function(korvai) {
+    return '<div id="korvai-content">' + this.korvaiToHTML(korvai) + '</div>';
+  },
+
+  // -------- PRIVATE --------
+
+  convertRepeater: function(r) {
     var lastSlash = r.lastIndexOf("/");
     if(lastSlash == -1) return;
 
@@ -15,10 +22,7 @@ var KorvaiRenderService = {
     for(var i = 0; i < repeaters.length; i++)
       rString = this.replaceRepeater(rString, repeaters[i]);
 
-    return '<span class="modifier-bracket">(</span> 
-              ' + rString + ' 
-            <span class="modifier-bracket">)</span> 
-            ×' + parseInt(r.slice(lastSlash + 1));
+    return '<span class="modifier-bracket">(</span>' + rString + '<span class="modifier-bracket">)</span> ×' + r.slice(lastSlash + 1);
   },
 
   replaceRepeater: function(str, r) {
@@ -30,14 +34,11 @@ var KorvaiRenderService = {
     if(lastSlash == -1) return;
 
     var nString = n.substring(0, lastSlash);
-    return '<span class="modifier-bracket">[</span> 
-              ' + nString + '
-            <span class="modifier-bracket">]</span> 
-            → ' + this.numberToNadai(parseInt(n.slice(lastSlash + 1)));
+    return '<span class="modifier-bracket">[</span>' + nString + '<span class="modifier-bracket">]</span> → ' + this.numberToNadai(parseInt(n.slice(lastSlash + 1)));
   },
 
   numberToNadai: function(num) {
-    switch num {
+    switch(num) {
       case 3:
         return "thisram";
       case 4:
@@ -66,7 +67,8 @@ var KorvaiRenderService = {
   korvaiToHTML: function(korvai) {
     if(korvai == "" || korvai == null) return "";
     
-    korvai = korvai.replaceAll(",", " , ").replaceAll(";", " ; ").replaceAll("\n", " \n ");
+    // TODO: understand why you need 4 backslashes for the newline replace
+    korvai = korvai.replaceAll(",", " , ").replaceAll(";", " ; ").replaceAll("\\\\n", " \n ");
     var korvaiWords = korvai.match(/([a-zA-Z]+)/g).removeDuplicates();
 
     for(var i = 0; i < korvaiWords.length; i++) {
@@ -86,7 +88,7 @@ var KorvaiRenderService = {
       korvai = korvai.replace("[" + n + "]", this.convertNadai(n));
     }
 
-    korvai = korvai.replaceAll("\n", "<br>");
+    korvai = korvai.replaceAll("\n", "<br />");
 
     return korvai;
   }

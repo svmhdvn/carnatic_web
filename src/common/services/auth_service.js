@@ -2,31 +2,19 @@ var CurrentUser = require('../models/current_user.js');
 
 var AuthService = {
   login: function(email, password) {
-    var ref = new Firebase("https://carnatic.firebaseio.com/");
-    var deferred = m.deferred();
     m.startComputation();
 
-    ref.authWithPassword({
+    return m.request({method: 'POST', url: 'http://localhost:3000/users/login', data: {
       email: email,
       password: password
-    }, function(error, authData) {
-      if(error) {
-        console.log("Firebase login failed, error: ", error);
-        deferred.reject(error);
-        m.endComputation();
-      } else {
-        console.log("Firebase login successful, authData: ", authData);
-        var userData = {
-          uid: authData.uid,
-          email: authData.password.email
-        }
-        CurrentUser.reset(userData);
-        deferred.resolve(userData);
-        m.endComputation();
-      }
+    }}).then(function(userData) {
+      console.log("login success: ", userData);
+      CurrentUser.reset(userData);
+      m.endComputation();
+    }, function(error) {
+      console.log("login failure: ", error);
+      m.endComputation();
     });
-
-    return deferred.promise;
   }
 };
 

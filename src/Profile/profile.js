@@ -4,7 +4,7 @@ var CurrentUser = require('../common/models/current_user.js');
 var ProfilePage = {};
 
 ProfilePage.controller = function() {
-  this.uid = CurrentUser.uid();
+  this.userId = CurrentUser.id();
   this.gravatarUrl = 'http://www.gravatar.com/avatar/' + CryptoJS.MD5(CurrentUser.email()) + '?d=mm&s=256';
 };
 
@@ -28,7 +28,7 @@ ProfilePage.view = AppLayout(function(ctrl) {
                 </div>
 
                 <div class="col-xs-12 col-sm-8">
-                  <h2>{ctrl.uid}</h2>
+                  <h2>{ctrl.userId}</h2>
                   <p><strong>About: </strong> Web Designer / UI Expert. </p>
                   <p><strong>Hobbies: </strong> Read, out with friends, listen to music, draw and learn new things. </p>
                   <p><strong>Skills: </strong>

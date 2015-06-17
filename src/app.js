@@ -1,6 +1,8 @@
 var LoginPage = require('./Login/login.js');
 var ProfilePage = require('./Profile/profile.js');
-var ProfileKorvaisPage = require('./Profile/korvais.js');
+var ProfileKorvaisPage = require('./Korvais/korvaiList.js');
+var KorvaiDetailPage = require('./Korvais/korvaiDetail.js');
+
 var CurrentUser = require('./common/models/current_user.js');
 
 var Authenticated = function(module) {
@@ -11,8 +13,8 @@ var Authenticated = function(module) {
 };
 
 Authenticated.controller = function(module) {
-  if(!CurrentUser.uid()) m.route('/login');
-  this.content = module.view.bind(this, new module.controller);
+  if(!CurrentUser.id()) m.route('/login');
+  else this.content = module.view.bind(this, new module.controller);
 };
 
 Authenticated.view = function(ctrl) {
@@ -41,6 +43,9 @@ Array.prototype.removeDuplicates = function() {
 m.route.mode = 'hash';
 m.route(document.getElementById('app'), '/login', {
   '/login': LoginPage,
+
   '/korvais': Authenticated(ProfileKorvaisPage),
+  '/korvais/:korvai_id': Authenticated(KorvaiDetailPage),
+
   '/me': Authenticated(ProfilePage)
 });
