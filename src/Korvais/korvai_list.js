@@ -13,7 +13,7 @@ ProfileKorvaisPage.controller = function() {
   };
 };
 
-ProfileKorvaisPage.view = AppLayout(function(ctrl) {
+ProfileKorvaisPage.view = function(ctrl) {
   var korvais = ctrl.korvais().map(function(korvai, index) {
     var title = "Thalam: " + korvai.thalam() + ", Matras after: " + korvai.matras_after();
 
@@ -35,6 +35,6 @@ ProfileKorvaisPage.view = AppLayout(function(ctrl) {
       {korvais}
     </div>
   );
-});
+};
 
 module.exports = ProfileKorvaisPage;

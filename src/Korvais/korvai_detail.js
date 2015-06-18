@@ -15,7 +15,7 @@ KorvaiDetailPage.controller = function() {
   });
 };
 
-KorvaiDetailPage.view = AppLayout(function(ctrl) {
+KorvaiDetailPage.view = function(ctrl) {
   var korvaiHtml = KorvaiRenderService.toMsx(ctrl.korvai.content());
 
   return (
@@ -24,6 +24,6 @@ KorvaiDetailPage.view = AppLayout(function(ctrl) {
       {korvaiHtml}
     </div>
   );
-});
+};
 
 module.exports = KorvaiDetailPage;

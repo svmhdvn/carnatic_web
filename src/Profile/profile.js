@@ -7,7 +7,7 @@ ProfilePage.controller = function() {
   this.profile = CurrentUser.profile();
 };
 
-ProfilePage.view = AppLayout(function(ctrl) {
+ProfilePage.view = function(ctrl) {
   return (
     <div class="container" id="Profile">
       <div class="row">
@@ -69,6 +69,6 @@ ProfilePage.view = AppLayout(function(ctrl) {
       </div>
     </div>
   );
-});
+};
 
 module.exports = ProfilePage;

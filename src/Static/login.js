@@ -1,4 +1,3 @@
-var CurrentUser = require('../common/models/current_user.js');
 var AuthService = require('../common/services/auth_service.js');
 
 var LoginPage = {};
@@ -15,7 +14,6 @@ LoginPage.controller = function() {
 
     if(vm.email() && vm.password()) {
       AuthService.login(vm.email(), vm.password()).then(function() {
-        console.log('Current user model: ', CurrentUser);
         vm.alerts().push("Login success!");
       }, function() {
         vm.alerts().push("Login failure!");

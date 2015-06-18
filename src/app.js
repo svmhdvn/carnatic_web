@@ -1,14 +1,19 @@
-var LoginPage = require('./Login/login.js');
+var LoginPage = require('./Static/login.js');
+var RegisterPage = require('./Static/register.js');
+
 var ProfilePage = require('./Profile/profile.js');
-var ProfileKorvaisPage = require('./Korvais/korvaiList.js');
-var KorvaiDetailPage = require('./Korvais/korvaiDetail.js');
+var ProfileKorvaisPage = require('./Korvais/korvai_list.js');
+
+var KorvaiDetailPage = require('./Korvais/korvai_detail.js');
+
+var AppLayout = require('./common/layouts/app_layout.js');
 
 var CurrentUser = require('./common/models/current_user.js');
 
 var Authenticated = function(module) {
   return {
     controller: function() { return new Authenticated.controller(module); },
-    view: Authenticated.view
+    view: AppLayout(Authenticated.view)
   };
 };
 
@@ -42,6 +47,7 @@ Array.prototype.removeDuplicates = function() {
 
 m.route.mode = 'hash';
 m.route(document.getElementById('app'), '/login', {
+  '/register': RegisterPage,
   '/login': LoginPage,
 
   '/korvais': Authenticated(ProfileKorvaisPage),

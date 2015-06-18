@@ -1,9 +1,15 @@
 var CurrentUser = require('../models/current_user.js');
+var AuthService = require('../services/auth_service.js');
 
 var Header = {};
 
 Header.controller = function() {
   this.profile = CurrentUser.profile();
+  this.logout = function(e) {
+    e.preventDefault();
+    AuthService.logout();
+    m.route('/');
+  };
 };
 
 Header.view = function(ctrl) {
@@ -11,26 +17,20 @@ Header.view = function(ctrl) {
     <nav class="navbar navbar-inverse navbar-fixed-top" id="Header">
       <div class="container-fluid">
         <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
           <a class="navbar-brand" href="#" id="logo">Carnatic</a>
         </div>
 
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
-            <li><a href="#">Dashboard</a></li>
-            <li><a href="#">Settings</a></li>
-            <li><a href="#">Profile</a></li>
-            <li><a href="#">Help</a></li>
+            <li><a href="#/korvais">Korvais</a></li>
+            <li><a href="#/me">Profile</a></li>
             <li class="divider"></li>
             <li><a href="#/me">
               <img src={ctrl.profile().picture_url()} width="20" height="20" />&nbsp;&nbsp;
               {ctrl.profile().name()}
             </a></li>
+            <li class="divider"></li>
+            <li><a onclick={ctrl.logout} href="">Logout</a></li>
           </ul>
         </div>
       </div>
