@@ -1,4 +1,3 @@
-var AppLayout = require('../common/layouts/app_layout.js');
 var CurrentUser = require('../common/models/current_user.js');
 
 var ProfileKorvaisPage = {};
@@ -32,7 +31,9 @@ ProfileKorvaisPage.view = function(ctrl) {
   return (
     <div id="ProfileKorvais">
       <h1>Korvais View</h1><br />
-      {korvais}
+      {korvais} <hr />
+
+      <a href="#/korvais/new" class="btn btn-danger btn-large">Create korvai</a>
     </div>
   );
 };

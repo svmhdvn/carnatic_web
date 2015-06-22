@@ -22,6 +22,7 @@ Header.view = function(ctrl) {
 
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
+            <li><a href="#/korvais/new">New Korvai</a></li>
             <li><a href="#/korvais">Korvais</a></li>
             <li><a href="#/me">Profile</a></li>
             <li class="divider"></li>

@@ -9,8 +9,9 @@ var plumber = require('gulp-plumber');
 var sass = require('gulp-sass');
 var minifyCss = require('gulp-minify-css');
 var rename = require('gulp-rename');
+var gutil = require('gulp-util');
  
-gulp.task('browserify', function() {
+gulp.task('scripts', function() {
   var bundler = browserify({
     entries: ['./src/app.js'], // Only need initial file, browserify finds the deps
     transform: [mithrilify], // We want to convert MSX to normal javascript
@@ -19,28 +20,38 @@ gulp.task('browserify', function() {
   });
 
   var watcher  = watchify(bundler);
+  var errorLog = function(e) {
+    return gutil.log("Error in line " + e.lineNumber + ":  \"" + e.description + "\"  [" + e.filename + "]");
+  };
 
   return watcher
     .on('update', function () { // When any files update
         var updateStart = Date.now();
-        console.log('Updating!');
 
         watcher.bundle() // Create new bundle that uses the cache for high performance
-          .pipe(plumber())
+          .on('error', errorLog)
           .pipe(source('app.js'))
           // This is where you add uglifying etc.
           .pipe(gulp.dest('./build/js'));
 
         console.log('Updated!', (Date.now() - updateStart) + 'ms');
     })
-    .bundle()
-    .pipe(plumber()) // Create the initial bundle when starting the task
+    .bundle() // Create the initial bundle when starting the task
+    .on('error', errorLog)
     .pipe(source('app.js'))
     .pipe(gulp.dest('./build/js'));
 });
 
 // I added this so that you see how to run two watch tasks
 gulp.task('styles', function() {
+  gulp.src(['./src/**/*.scss'])
+    .pipe(plumber())
+    .pipe(sass())
+    .pipe(rename({extname: '.css'}))
+    .pipe(minifyCss())
+    .pipe(concat('app.min.css'))
+    .pipe(gulp.dest('./build/css'));
+
   gulp.watch(['./src/**/*.scss'], function() {
     console.log("updating styles!");
     
@@ -55,4 +66,4 @@ gulp.task('styles', function() {
 });
 
 // Just running the two tasks
-gulp.task('default', ['browserify', 'styles']);
+gulp.task('default', ['scripts', 'styles']);

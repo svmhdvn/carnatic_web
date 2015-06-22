@@ -1,4 +1,3 @@
-var AppLayout = require('../common/layouts/app_layout.js');
 var CurrentUser = require('../common/models/current_user.js');
 
 var ProfilePage = {};

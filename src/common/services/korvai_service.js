@@ -1,13 +1,17 @@
 var MatrasService = require('./matras_service.js');
 var msx = require('msx');
 
-var KorvaiRenderService = {
+var KorvaiService = {
   toMsx: function(korvai) {
     return eval('(' + msx.transform(this.renderHTML(korvai)) + ')');
   },
 
   renderHTML: function(korvai) {
-    return '<div id="korvai-content">' + this.korvaiToHTML(korvai) + '</div>';
+    return '<div class="korvai-content">' + this.korvaiToHTML(korvai) + '</div>';
+  },
+
+  countMatras: function(korvai) {
+    return MatrasService.countMatras(korvai, true);
   },
 
   // -------- PRIVATE --------
@@ -94,4 +98,4 @@ var KorvaiRenderService = {
   }
 };
 
-module.exports = KorvaiRenderService;
+module.exports = KorvaiService;

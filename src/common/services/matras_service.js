@@ -1,4 +1,37 @@
 var MatrasService = {
+  // countMatras(korvai) counts the number of matras in the korvai
+  // TODO: this only works for 2nd speed
+  countMatras: function(korvai, hasNadais) {
+    var div = document.createElement("div");
+    div.innerHTML = korvai;
+    korvai = div.textContent || div.innerText || '';
+
+    var matras = 0;
+
+    if(hasNadais) {
+      var nadais = this.findModifiers(korvai, "[", "]");
+
+      for(var i = 0; i < nadais.length; i++) {
+        var n = nadais[i];
+        matras += this.nadaiMatras(n);
+        korvai = korvai.replace("[" + n + "]", '');
+      }
+    }
+
+    var repeaters = this.findModifiers(korvai, "(", ")");
+
+    for(var i = 0; i < repeaters.length; i++) {
+      var r = repeaters[i];
+      matras += this.repeaterMatras(r);
+      korvai = korvai.replace("(" + r + ")", '');
+    }
+
+    matras += this.matrasWithoutModifiers(korvai);
+    return matras;
+  },
+
+  // -------- PRIVATE --------
+  
   // findModifiers(str, oBracket, cBracket) produces an array of all the
   // content of the "modifiers" in the given korvai string, where a modifier
   // is either a repeater or nadai
@@ -95,35 +128,6 @@ var MatrasService = {
     var semicolons = korvai.match(/;/g);
     matras += (semicolons ? semicolons.length * 2 : 0);
 
-    return matras;
-  },
-
-  // countMatras(korvai) counts the number of matras in the korvai
-  // TODO: this only works for 2nd speed
-  countMatras: function(korvai, hasNadais) {
-    var div = document.createElement("div");
-    div.innerHTML = korvai;
-    korvai = div.textContent || div.innerText || '';
-
-    var matras = 0;
-
-    if(hasNadais) {
-      var nadais = this.findModifiers(korvai, "[", "]");
-
-      for(var i = 0; i < nadais.length; i++) {
-        matras += this.nadaiMatras(nadais[i]);
-        korvai = korvai.replace("[" + nadais[i] + "]", '');
-      }
-    }
-
-    var repeaters = this.findModifiers(korvai, "(", ")");
-
-    for(var i = 0; i < repeaters.length; i++) {
-      matras += this.repeaterMatras(repeaters[i]);
-      korvai = korvai.replace("(" + r + ")", '');
-    }
-
-    matras += this.matrasWithoutModifiers(korvai);
     return matras;
   }
 };

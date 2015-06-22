@@ -5,6 +5,7 @@ var ProfilePage = require('./Profile/profile.js');
 var ProfileKorvaisPage = require('./Korvais/korvai_list.js');
 
 var KorvaiDetailPage = require('./Korvais/korvai_detail.js');
+var CreateKorvaiPage = require('./Korvais/create_korvai.js');
 
 var AppLayout = require('./common/layouts/app_layout.js');
 
@@ -52,6 +53,7 @@ m.route(document.getElementById('app'), '/login', {
 
   '/korvais': Authenticated(ProfileKorvaisPage),
   '/korvais/:korvai_id': Authenticated(KorvaiDetailPage),
+  '/korvais/new': Authenticated(CreateKorvaiPage),
 
   '/me': Authenticated(ProfilePage)
 });

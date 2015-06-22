@@ -10,8 +10,6 @@ LoginPage.controller = function() {
   vm.alerts = m.prop([]);
 
   vm.login = function(e) {
-    e.preventDefault();
-
     if(vm.email() && vm.password()) {
       AuthService.login(vm.email(), vm.password()).then(function() {
         vm.alerts().push("Login success!");
