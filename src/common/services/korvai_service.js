@@ -14,6 +14,18 @@ var KorvaiService = {
     return MatrasService.countMatras(korvai, true);
   },
 
+  formatMatraCount: function(korvai, thalam) {
+    var totalMatras = this.countMatras(korvai);
+
+    var avarthanams = Math.floor(totalMatras / thalam);
+    var avarthanamsPhrase = avarthanams.toString() + " avarthanam" + (avarthanams !== 1 ? "s" : "") + ", ";
+
+    var matrasRemaining = totalMatras % thalam;
+    var matrasPhrase = matrasRemaining + " matra" + (matrasRemaining !== 1 ? "s" : "");
+
+    return avarthanamsPhrase + matrasPhrase;
+  },
+
   // -------- PRIVATE --------
 
   convertRepeater: function(r) {
@@ -86,8 +98,8 @@ var KorvaiService = {
       korvai = korvai.replace("(" + r + ")", this.convertRepeater(r));
     }
 
-    var nadais = MatrasService.findModifiers(korvai, "[", "]")
-    for(var i = 0; i < nadais[i]; i++) {
+    var nadais = MatrasService.findModifiers(korvai, "[", "]");
+    for(var i = 0; i < nadais.length; i++) {
       var n = nadais[i];
       korvai = korvai.replace("[" + n + "]", this.convertNadai(n));
     }

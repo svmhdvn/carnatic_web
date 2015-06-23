@@ -9,7 +9,7 @@ KorvaiDetailPage.controller = function() {
 
   API('GET', '/korvais/' + m.route.param('korvai_id')).then(function(korvaiData) {
     vm.korvai = new Korvai(korvaiData);
-    vm.totalMatras = KorvaiService.countMatras(vm.korvai.content());
+    vm.formattedMatraCount = KorvaiService.formatMatraCount(vm.korvai.content(), vm.korvai.thalam());
   });
 };
 
@@ -18,7 +18,7 @@ KorvaiDetailPage.view = function(ctrl) {
 
   return (
     <div id="KorvaiDetail">
-      <h1>Korvai #{ctrl.korvai.id()} <small>({ctrl.totalMatras} matras)</small></h1><hr />
+      <h1>Korvai #{ctrl.korvai.id()} <small>({ctrl.formattedMatraCount})</small></h1><hr />
       {korvaiHtml}
     </div>
   );
