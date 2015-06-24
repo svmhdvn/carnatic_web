@@ -27,7 +27,7 @@ CurrentUser.clear = function() {
   CurrentUser.id('');
   CurrentUser.email('');
   CurrentUser.auth_token('');
-  CurrentUser._profile(false)
+  CurrentUser._profile(false);
 };
 
 CurrentUser.profile = function() {
@@ -42,6 +42,18 @@ CurrentUser.profile = function() {
 CurrentUser.korvais = function() {
   return API('GET', '/users/' + CurrentUser.id() + '/korvais').then(function(korvais) {
     return korvais.map(function(k, index) {return new Korvai(k)});
+  });
+};
+
+CurrentUser.followers = function() {
+  return API('GET', '/users/' + CurrentUser.id() + '/followers').then(function(followers) {
+    return followers.map(function(f, index) {return new Profile(f)});
+  });
+};
+
+CurrentUser.followings = function() {
+  return API('GET', '/users/' + CurrentUser.id() + '/followings').then(function(followings) {
+    return followings.map(function(f, index) {return new Profile(f)});
   });
 };
 

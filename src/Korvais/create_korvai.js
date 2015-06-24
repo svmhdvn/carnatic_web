@@ -17,9 +17,9 @@ CreateKorvaiPage.controller = function() {
       matras_after: vm.korvai.matras_after(),
       thalam: vm.korvai.thalam()
     }, CurrentUser.auth_token()).then(function(korvai) {
-      console.log("korvai creation success:  ", korvai);
+      toastr.success('Successfully created korvai!');
     }, function(error) {
-      console.log("korvai creation failure:  ", error);
+      toastr.error('Error in creating korvai.');
     });
   };
 

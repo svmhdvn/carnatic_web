@@ -10,6 +10,8 @@ LoginPage.controller = function() {
   vm.alerts = m.prop([]);
 
   vm.login = function(e) {
+    e.preventDefault();
+    
     if(vm.email() && vm.password()) {
       AuthService.login(vm.email(), vm.password()).then(function() {
         vm.alerts().push("Login success!");
@@ -57,12 +59,6 @@ LoginPage.view = function(ctrl) {
             onchange={m.withAttr('value', ctrl.password)}
             value={ctrl.password()}
             required />
-
-          <div class="checkbox">
-            <label>
-              <input type="checkbox" value="remember-me" /> Remember me
-            </label>
-          </div>
 
           <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
         </form>

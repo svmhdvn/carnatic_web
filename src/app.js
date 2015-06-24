@@ -44,6 +44,13 @@ Array.prototype.removeDuplicates = function() {
   }, []);
 };
 
+// options and configuration
+
+toastr.options = {
+  "newestOnTop": true,
+  "positionClass": "toast-bottom-full-width"
+};
+
 // routes
 
 m.route.mode = 'hash';

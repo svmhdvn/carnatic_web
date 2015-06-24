@@ -4,6 +4,8 @@ var ProfilePage = {};
 
 ProfilePage.controller = function() {
   this.profile = CurrentUser.profile();
+  this.followers = CurrentUser.followers();
+  this.followings = CurrentUser.followings();
 };
 
 ProfilePage.view = function(ctrl) {
@@ -45,13 +47,13 @@ ProfilePage.view = function(ctrl) {
 
                 <div class="clearfix"></div>
                 <div class="col-xs-12 col-sm-4">
-                  <h2><strong> 20,7K </strong></h2>
+                  <h2><strong>{ctrl.followers().length}</strong></h2>
                   <p><small>Followers</small></p>
                   <button class="btn btn-success btn-block"><span class="fa fa-plus-circle"></span> Follow </button>
                 </div>
 
                 <div class="col-xs-12 col-sm-4">
-                  <h2><strong>245</strong></h2>
+                  <h2><strong>{ctrl.followings().length}</strong></h2>
                   <p><small>Following</small></p>
                   <button class="btn btn-info btn-block"><span class="fa fa-user"></span> View Profile </button>
                 </div>
