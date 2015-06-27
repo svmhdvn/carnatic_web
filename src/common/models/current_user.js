@@ -8,10 +8,7 @@ var CurrentUser = (function(){
   return {
     id: m.prop(localUserData.id || ''),
     email: m.prop(localUserData.email || ''),
-    auth_token: m.prop(localUserData.auth_token || ''),
-
-    // cached current user relationships
-    _profile: m.prop(false)
+    auth_token: m.prop(localUserData.auth_token || '')
   };
 }());
 
@@ -31,29 +28,14 @@ CurrentUser.clear = function() {
 };
 
 CurrentUser.profile = function() {
-  if(CurrentUser._profile()) return CurrentUser._profile;
-  else return API('GET', '/users/' + CurrentUser.id() + '/profile').then(function(profile) {
-    var p = new Profile(profile);
-    CurrentUser._profile(p);
-    return p;
+  return API('GET', '/users/' + CurrentUser.id() + '/profile').then(function(profile) {
+    return new Profile(profile);
   });
 };
 
 CurrentUser.korvais = function() {
   return API('GET', '/users/' + CurrentUser.id() + '/korvais').then(function(korvais) {
     return korvais.map(function(k, index) {return new Korvai(k)});
-  });
-};
-
-CurrentUser.followers = function() {
-  return API('GET', '/users/' + CurrentUser.id() + '/followers').then(function(followers) {
-    return followers.map(function(f, index) {return new Profile(f)});
-  });
-};
-
-CurrentUser.followings = function() {
-  return API('GET', '/users/' + CurrentUser.id() + '/followings').then(function(followings) {
-    return followings.map(function(f, index) {return new Profile(f)});
   });
 };
 

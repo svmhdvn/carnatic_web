@@ -1,8 +1,13 @@
 var LoginPage = require('./Static/login.js');
 var RegisterPage = require('./Static/register.js');
 
-var ProfilePage = require('./Profile/profile.js');
+var ProfilePage = require('./Profile/profile_view.js');
 var ProfileKorvaisPage = require('./Korvais/korvai_list.js');
+
+var _followingsPages = require('./Followings/followings.js');
+
+var FollowersPage = _followingsPages.FollowersPage;
+var FollowingsPage = _followingsPages.FollowingsPage;
 
 var KorvaiDetailPage = require('./Korvais/korvai_detail.js');
 var CreateKorvaiPage = require('./Korvais/create_korvai.js');
@@ -62,5 +67,7 @@ m.route(document.getElementById('app'), '/login', {
   '/korvais/:korvai_id': Authenticated(KorvaiDetailPage),
   '/korvais/new': Authenticated(CreateKorvaiPage),
 
-  '/me': Authenticated(ProfilePage)
+  '/users/:user_id': Authenticated(ProfilePage),
+  '/users/:user_id/followers': Authenticated(FollowersPage),
+  '/users/:user_id/following': Authenticated(FollowingsPage)
 });

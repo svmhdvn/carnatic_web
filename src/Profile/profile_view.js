@@ -1,11 +1,30 @@
 var CurrentUser = require('../common/models/current_user.js');
+var API = require('../common/services/api_service.js');
+var Profile = require('../common/models/profile.js');
 
 var ProfilePage = {};
 
 ProfilePage.controller = function() {
-  this.profile = CurrentUser.profile();
-  this.followers = CurrentUser.followers();
-  this.followings = CurrentUser.followings();
+  var vm = this;
+
+  var paramUserId = m.route.param('user_id');
+  if(paramUserId == CurrentUser.id()) {
+    vm.profile = CurrentUser.profile();
+    vm.hideFollowButton = true;
+  } else {
+    API('GET', '/users/' + m.route.param('user_id') + '/profile').then(function(profileData) {
+      vm.profile = m.prop(new Profile(profileData));
+      vm.hideFollowButton = false;
+    });
+  }
+
+  vm.followers = API('GET', '/users/' + paramUserId + '/followers').then(function(followers) {
+    return followers.map(function(f, index) {return new Profile(f)});
+  });
+
+  vm.followings = API('GET', '/users/' + paramUserId + '/followings').then(function(followings) {
+    return followings.map(function(f, index) {return new Profile(f)});
+  });
 };
 
 ProfilePage.view = function(ctrl) {
@@ -37,25 +56,20 @@ ProfilePage.view = function(ctrl) {
                   <h2>{ctrl.profile().name()}</h2>
                   <p><strong>About: </strong> Web Designer / UI Expert. </p>
                   <p><strong>Hobbies: </strong> Read, out with friends, listen to music, draw and learn new things. </p>
-                  <p><strong>Skills: </strong>
-                    <span class="label label-info tags">html5</span> 
-                    <span class="label label-info tags">css3</span>
-                    <span class="label label-info tags">jquery</span>
-                    <span class="label label-info tags">bootstrap3</span>
-                  </p>
+                  <button class="btn btn-warning" onclick={ctrl.follow} disabled={ctrl.hideFollowButton} >Follow</button>
                 </div>
 
                 <div class="clearfix"></div>
                 <div class="col-xs-12 col-sm-4">
                   <h2><strong>{ctrl.followers().length}</strong></h2>
                   <p><small>Followers</small></p>
-                  <button class="btn btn-success btn-block"><span class="fa fa-plus-circle"></span> Follow </button>
+                  <button class="btn btn-success btn-block"><span class="fa fa-plus-circle"></span>View Followers</button>
                 </div>
 
                 <div class="col-xs-12 col-sm-4">
                   <h2><strong>{ctrl.followings().length}</strong></h2>
                   <p><small>Following</small></p>
-                  <button class="btn btn-info btn-block"><span class="fa fa-user"></span> View Profile </button>
+                  <button class="btn btn-info btn-block"><span class="fa fa-user"></span>View Following</button>
                 </div>
 
                 <div class="col-xs-12 col-sm-4">
