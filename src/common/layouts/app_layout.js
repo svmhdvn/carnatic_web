@@ -29,7 +29,7 @@ Header.view = function(ctrl) {
             <li><a href="#/korvais">Korvais</a></li>
             <li class="divider"></li>
             <li><a href={myProfileLink}>
-              <img src={ctrl.profile().picture_url()} width="20" height="20" />&nbsp;&nbsp;
+              <img src={ctrl.profile().getSizedPicture(20)} />&nbsp;&nbsp;
               {ctrl.profile().name()}
             </a></li>
             <li class="divider"></li>

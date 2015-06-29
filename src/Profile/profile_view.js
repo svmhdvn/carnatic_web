@@ -25,10 +25,21 @@ ProfilePage.controller = function() {
   vm.followings = API('GET', '/users/' + paramUserId + '/followings').then(function(followings) {
     return followings.map(function(f, index) {return new Profile(f)});
   });
+
+  var currentUrl = m.route();
+  vm.followersRoute = function() {
+    m.route(currentUrl + "/followers");
+  };
+  vm.followingRoute = function() {
+    m.route(currentUrl + "/following");
+  };
+
+  vm.follow = function() {
+    
+  };
 };
 
-ProfilePage.view = function(ctrl) {
-  return (
+ProfilePage.view = function(ctrl) {return (
     <div class="container" id="Profile">
       <div class="row">
         <div class="col-md-8 col-xs-10">
@@ -37,7 +48,7 @@ ProfilePage.view = function(ctrl) {
               <div class="row">
                 <div class="col-xs-12 col-sm-4 text-center">
                   <img 
-                    src={ctrl.profile().picture_url()} 
+                    src={ctrl.profile().getSizedPicture(200)} 
                     alt="Profile picture" 
                     class="center-block img-circle img-thumbnail img-responsive" 
                     height="200"
@@ -56,20 +67,20 @@ ProfilePage.view = function(ctrl) {
                   <h2>{ctrl.profile().name()}</h2>
                   <p><strong>About: </strong> Web Designer / UI Expert. </p>
                   <p><strong>Hobbies: </strong> Read, out with friends, listen to music, draw and learn new things. </p>
-                  <button class="btn btn-warning" onclick={ctrl.follow} disabled={ctrl.hideFollowButton} >Follow</button>
+                  <button class="btn btn-warning" onclick={ctrl.follow} disabled={ctrl.hideFollowButton}>{ctrl.hideFollowButton ? "Already" : "Follow"}</button>
                 </div>
 
                 <div class="clearfix"></div>
                 <div class="col-xs-12 col-sm-4">
                   <h2><strong>{ctrl.followers().length}</strong></h2>
                   <p><small>Followers</small></p>
-                  <button class="btn btn-success btn-block"><span class="fa fa-plus-circle"></span>View Followers</button>
+                  <button class="btn btn-success btn-block" onclick={ctrl.followersRoute}><span class="fa fa-plus-circle"></span>View Followers</button>
                 </div>
 
                 <div class="col-xs-12 col-sm-4">
                   <h2><strong>{ctrl.followings().length}</strong></h2>
                   <p><small>Following</small></p>
-                  <button class="btn btn-info btn-block"><span class="fa fa-user"></span>View Following</button>
+                  <button class="btn btn-info btn-block" onclick={ctrl.followingRoute}><span class="fa fa-user"></span>View Following</button>
                 </div>
 
                 <div class="col-xs-12 col-sm-4">

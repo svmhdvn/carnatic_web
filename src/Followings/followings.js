@@ -17,15 +17,17 @@ FollowingsPage.controller = function() {
 };
 
 var followingTemplate = function(f, index) {
-  var formattedPictureUrl = f.picture_url() + '&s=50';
+  var userUrl = "#/users/" + f.user_id();
 
   return (
-    <div class="panel panel-default">
-      <div class="panel-body">
-        <img src={formattedPictureUrl} />&nbsp;&nbsp;
-        {f.name()}
+    <a href={userUrl}>
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <img src={f.getSizedPicture(50)} />&nbsp;&nbsp;
+          {f.name()}
+        </div>
       </div>
-    </div>
+    </a>
   );
 };
 

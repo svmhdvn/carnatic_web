@@ -4,27 +4,24 @@ var ProfileKorvaisPage = {};
 
 ProfileKorvaisPage.controller = function() {
   this.korvais = CurrentUser.korvais();
-
-  this.goToKorvai = function(korvaiId) {
-    return function() {
-      m.route('/korvais/' + korvaiId);
-    }
-  };
 };
 
 ProfileKorvaisPage.view = function(ctrl) {
   var korvais = ctrl.korvais().map(function(korvai, index) {
     var title = "Thalam: " + korvai.thalam() + ", Matras after: " + korvai.matras_after();
+    var korvaiUrl = "#/korvais/" + korvai.id();
 
     return (
-      <div class="panel panel-primary" onclick={ctrl.goToKorvai(korvai.id())}>
-        <div class="panel-heading">
-          <h3 class="panel-title">{title}</h3>
+      <a href={korvaiUrl}>
+        <div class="panel panel-primary">
+          <div class="panel-heading">
+            <h3 class="panel-title">{title}</h3>
+          </div>
+          <div class="panel-body">
+            {korvai.content()}
+          </div>
         </div>
-        <div class="panel-body">
-          {korvai.content()}
-        </div>
-      </div>
+      </a>
     );
   });
 
