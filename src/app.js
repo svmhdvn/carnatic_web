@@ -1,6 +1,3 @@
-var LoginPage = require('./Static/login.js');
-var RegisterPage = require('./Static/register.js');
-
 var ProfilePage = require('./Profile/profile_view.js');
 var ProfileKorvaisPage = require('./Korvais/korvai_list.js');
 
@@ -12,25 +9,54 @@ var FollowingsPage = _followingsPages.FollowingsPage;
 var KorvaiDetailPage = require('./Korvais/korvai_detail.js');
 var CreateKorvaiPage = require('./Korvais/create_korvai.js');
 
-var AppLayout = require('./common/layouts/app_layout.js');
-
 var CurrentUser = require('./common/models/current_user.js');
 
-var Authenticated = function(module) {
-  return {
-    controller: function() { return new Authenticated.controller(module); },
-    view: AppLayout(Authenticated.view)
-  };
+// Header Layout
+
+var Header = {};
+
+Header.controller = function() {
+  if(!CurrentUser.id()) window.location.replace("/login");
+  else {
+    this.profile = CurrentUser.profile();
+
+    this.logout = function(e) {
+      e.preventDefault();
+      CurrentUser.clear();
+      m.route('/');
+    };
+  }
 };
 
-Authenticated.controller = function(module) {
-  if(!CurrentUser.id()) m.route('/login');
-  else this.content = module.view.bind(this, new module.controller);
+Header.view = function(ctrl) {
+  var myProfileLink = '#/users/' + CurrentUser.id();
+
+  return (
+    <nav class="navbar navbar-inverse navbar-fixed-top" id="Header">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#" id="logo">Carnatic</a>
+        </div>
+
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="#/korvais/new">New Korvai</a></li>
+            <li><a href="#/korvais">Korvais</a></li>
+            <li class="divider"></li>
+            <li><a href={myProfileLink}>
+              <img src={ctrl.profile().getSizedPicture(20)} />&nbsp;&nbsp;
+              {ctrl.profile().name()}
+            </a></li>
+            <li class="divider"></li>
+            <li><a onclick={ctrl.logout} href="">Logout</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  );
 };
 
-Authenticated.view = function(ctrl) {
-  return m("#Authenticated", ctrl.content());
-};
+m.mount(document.getElementById('HeaderContainer'), Header);
 
 // helpers
 
@@ -59,15 +85,12 @@ toastr.options = {
 // routes
 
 m.route.mode = 'hash';
-m.route(document.getElementById('app'), '/login', {
-  '/register': RegisterPage,
-  '/login': LoginPage,
+m.route(document.getElementById('AppContainer'), '/korvais', {
+  '/korvais': ProfileKorvaisPage,
+  '/korvais/:korvai_id': KorvaiDetailPage,
+  '/korvais/new': CreateKorvaiPage,
 
-  '/korvais': Authenticated(ProfileKorvaisPage),
-  '/korvais/:korvai_id': Authenticated(KorvaiDetailPage),
-  '/korvais/new': Authenticated(CreateKorvaiPage),
-
-  '/users/:user_id': Authenticated(ProfilePage),
-  '/users/:user_id/followers': Authenticated(FollowersPage),
-  '/users/:user_id/following': Authenticated(FollowingsPage)
+  '/users/:user_id': ProfilePage,
+  '/users/:user_id/followers': FollowersPage,
+  '/users/:user_id/following': FollowingsPage
 });

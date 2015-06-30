@@ -1,16 +1,14 @@
-#AppLayout {
-  padding-top: 50px;
-
-  #Header {
-    #logo {
-      float: left;
-      margin-right: 10px;
-      font-size: 1.7em;
-      color: #fff;
-      text-transform: uppercase;
-      letter-spacing: -1px;
-      padding-top: 15px;
-      font-weight: bold;
-    }
+#Header {
+  margin-bottom: 50px;
+  
+  #logo {
+    float: left;
+    margin-right: 10px;
+    font-size: 1.7em;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+    padding-top: 15px;
+    font-weight: bold;
   }
 }

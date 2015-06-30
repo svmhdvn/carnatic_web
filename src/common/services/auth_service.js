@@ -34,10 +34,6 @@ var AuthService = {
       console.log("login failure: ", error);
       m.endComputation();
     });
-  },
-
-  logout: function() {
-    CurrentUser.clear();
   }
 };
 

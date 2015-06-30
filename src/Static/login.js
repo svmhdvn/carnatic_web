@@ -69,4 +69,4 @@ LoginPage.view = function(ctrl) {
   );
 };
 
-module.exports = LoginPage;
+m.mount(document.getElementById('LoginContainer'), LoginPage);

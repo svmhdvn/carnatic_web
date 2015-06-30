@@ -24,7 +24,6 @@ CurrentUser.clear = function() {
   CurrentUser.id('');
   CurrentUser.email('');
   CurrentUser.auth_token('');
-  CurrentUser._profile(false);
 };
 
 CurrentUser.profile = function() {
