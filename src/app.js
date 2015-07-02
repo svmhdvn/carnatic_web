@@ -16,14 +16,14 @@ var CurrentUser = require('./common/models/current_user.js');
 var Header = {};
 
 Header.controller = function() {
-  if(!CurrentUser.id()) window.location.replace("/login");
+  if(!CurrentUser.id()) window.location.replace("/#/login");
   else {
     this.profile = CurrentUser.profile();
 
     this.logout = function(e) {
       e.preventDefault();
       CurrentUser.clear();
-      m.route('/');
+      window.location.replace("/");
     };
   }
 };

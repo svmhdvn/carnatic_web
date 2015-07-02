@@ -1,17 +1,9 @@
 var MatrasService = require('./matras_service.js');
-var msx = require('msx');
 
 var KorvaiService = {
   toMsx: function(korvai) {
-    return eval('(' + msx.transform(this.renderHTML(korvai)) + ')');
-  },
-
-  renderHTML: function(korvai) {
-    return '<div class="korvai-content">' + this.korvaiToHTML(korvai) + '</div>';
-  },
-
-  countMatras: function(korvai) {
-    return MatrasService.countMatras(korvai, true);
+    var korvaiWords = this.addWhitespace(korvai).match(/([a-zA-z\(\)\[\]\n]+|\/[0-9]+)/g);
+    return <div class="korvai-content">{this.formatWords(korvaiWords)}</div>;
   },
 
   formatMatraCount: function(korvai, thalam) {
@@ -26,31 +18,74 @@ var KorvaiService = {
     return avarthanamsPhrase + matrasPhrase;
   },
 
+  countMatras: function(korvai) {
+    return MatrasService.countMatras(korvai, true);
+  },
+
   // -------- PRIVATE --------
 
-  convertRepeater: function(r) {
-    var lastSlash = r.lastIndexOf("/");
-    if(lastSlash == -1) return;
+  formatWords: function(wordList, modifierOpeningBracket) {
+    var children = [];
+    // if formatWords is called on a repeater or a nadai enclosed in brackets
+    if(modifierOpeningBracket) {
+      children.push(<span class="modifier-bracket">{modifierOpeningBracket}&nbsp;</span>);
+    }
 
-    var rString = r.substring(0, lastSlash);
-    var repeaters = MatrasService.findModifiers(rString, "(", ")");
+    // only go to the 2nd last element because the last one contains the number for modification
+    for(var i = 0; i < wordList.length - (modifierOpeningBracket ? 1 : 0); i++) {
+      var word = wordList[i];
+      var openingBracket = this.openingBracket(word);
 
-    for(var i = 0; i < repeaters.length; i++)
-      rString = this.replaceRepeater(rString, repeaters[i]);
+      // if there's an opening bracket, then a modifier begins
+      if(openingBracket) {
+        var j = i;
+        var brackets = 0;
 
-    return '<span class="modifier-bracket">(</span>' + rString + '<span class="modifier-bracket">)</span> ×' + r.slice(lastSlash + 1);
+        while(j < wordList.length) {
+          word = wordList[++j];
+          if(this.openingBracket(word)) brackets++;
+          else if(this.closingBracket(word) && !brackets) break;
+          else if(this.closingBracket(word)) brackets--;
+        }
+
+        if(j == wordList.length) {
+          console.error('invalid korvai');
+        } else {
+          var modified = wordList.slice(i+1, j);
+          children.push(this.formatWords(modified, openingBracket));
+          i = j;
+        }
+      } else if(word == "\n") {
+        children.push(<br />);
+      } else {
+        children.push(<span>{word}<sup>{this.countMatras(word)}</sup> </span>);
+      }
+    }
+
+    // close the bracket if formatWords was called with an enclosed modifier
+    if(modifierOpeningBracket) {
+      children.push(<span class="modifier-bracket">&nbsp;{(modifierOpeningBracket == '(' ? ')' : ']')}</span>);
+      if(modifierOpeningBracket == '(') {
+        children.push(" × " + wordList[i].substring(1));
+      } else {
+        children.push(" → " + this.numberToNadai(parseInt(wordList[i].substring(1))));
+      }
+    }
+
+    return children;
   },
 
-  replaceRepeater: function(str, r) {
-    return str.replace("(" + r + ")", this.convertRepeater(r));
+  // adds spaces between all the misc. characters and whitespace
+  addWhitespace: function(korvai) {
+    return korvai.replace(/([,;\(\)\[\]\n]|\/[0-9]+)/g, ' $1 ');
   },
 
-  convertNadai: function(n) {
-    var lastSlash = n.lastIndexOf("/");
-    if(lastSlash == -1) return;
+  openingBracket: function(str) {
+    return (str == '(' || str == '[' ? str : false);
+  },
 
-    var nString = n.substring(0, lastSlash);
-    return '<span class="modifier-bracket">[</span>' + nString + '<span class="modifier-bracket">]</span> → ' + this.numberToNadai(parseInt(n.slice(lastSlash + 1)));
+  closingBracket: function(str) {
+    return (str == ')' || str == ']' ? str : false);
   },
 
   numberToNadai: function(num) {
@@ -70,43 +105,6 @@ var KorvaiService = {
       case 9:
         return "sankeernam";
     }
-  },
-
-  grabContent: function(content) {
-    content = content.replaceAll("<br>", "\n");
-    var div = document.createElement("div");
-    div.innerHTML = content;
-    content = div.textContent || div.innerText || "";
-    return content;
-  },
-
-  korvaiToHTML: function(korvai) {
-    if(korvai == "" || korvai == null) return "";
-    
-    // TODO: understand why you need 4 backslashes for the newline replace
-    korvai = korvai.replaceAll(",", " , ").replaceAll(";", " ; ").replaceAll("\\\\n", " \n ");
-    var korvaiWords = korvai.match(/([a-zA-Z]+)/g).removeDuplicates();
-
-    for(var i = 0; i < korvaiWords.length; i++) {
-      var word = korvaiWords[i];
-      korvai = korvai.replaceAll("\\b" + word + "\\b", " " + word + "<sup>" + MatrasService.wordMatras(word) + "</sup> ");
-    }
-
-    var repeaters = MatrasService.findModifiers(korvai, "(", ")");
-    for(var i = 0; i < repeaters.length; i++) {
-      var r = repeaters[i];
-      korvai = korvai.replace("(" + r + ")", this.convertRepeater(r));
-    }
-
-    var nadais = MatrasService.findModifiers(korvai, "[", "]");
-    for(var i = 0; i < nadais.length; i++) {
-      var n = nadais[i];
-      korvai = korvai.replace("[" + n + "]", this.convertNadai(n));
-    }
-
-    korvai = korvai.replaceAll("\n", "<br />");
-
-    return korvai;
   }
 };
 

@@ -1,3 +1,7 @@
+html, body, #StaticContainer, #StaticContainer > div {
+  height: 100%;
+}
+
 #Login, #Register {
   background-color: #eee;
 

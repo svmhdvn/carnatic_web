@@ -14,7 +14,7 @@ LoginPage.controller = function() {
     
     if(vm.email() && vm.password()) {
       AuthService.login(vm.email(), vm.password()).then(function() {
-        vm.alerts().push("Login success!");
+        window.location.replace("/app");
       }, function() {
         vm.alerts().push("Login failure!");
       });
@@ -69,4 +69,4 @@ LoginPage.view = function(ctrl) {
   );
 };
 
-m.mount(document.getElementById('LoginContainer'), LoginPage);
+module.exports = LoginPage;

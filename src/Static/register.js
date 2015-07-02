@@ -91,4 +91,4 @@ RegisterPage.view = function(ctrl) {
   );
 };
 
-m.mount(document.getElementById('RegisterContainer'), RegisterPage);
+module.exports = RegisterPage;
